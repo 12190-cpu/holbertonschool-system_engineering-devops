@@ -1,0 +1,125 @@
+# 2. Secured and Monitored Web Infrastructure
+
+## Diagram
+
+https://drive.google.com/drive/u/2/folders/0AIaW6cUuc2CxUk9PVA
+[text](<../../../Downloads/Secured and Monitored.drawio.pdf>)
+![alt text](<Secured and Monitored.drawio.png>)
+
+## Explanation
+
+A user wants to access `www.foobar.com`.
+
+The user connects to the website using HTTPS.
+
+The DNS resolves `www.foobar.com` to the IP address of the load balancer.
+
+The request first passes through a firewall. The firewall filters traffic and allows only authorized ports, such as port 443 for HTTPS.
+
+The load balancer receives the HTTPS request. It uses an SSL certificate to serve encrypted traffic.
+
+Then the load balancer forwards the request to one of the backend servers.
+
+Each backend server has its own firewall, Nginx web server, application server, application files, MySQL database, and monitoring client.
+
+Monitoring clients collect metrics and send them to a monitoring service.
+
+## Why We Added Each Element
+
+### Firewalls
+
+Firewalls are added to filter network traffic.
+
+They protect the infrastructure by allowing only required traffic and blocking unauthorized traffic.
+
+### SSL Certificate
+
+The SSL certificate allows the website to serve traffic over HTTPS.
+
+HTTPS encrypts communication between the user's browser and the infrastructure.
+
+### Monitoring Clients
+
+Monitoring clients collect data from servers.
+
+They help track performance, availability, CPU usage, memory usage, disk usage, network traffic, and errors.
+
+## What Are Firewalls For?
+
+Firewalls control incoming and outgoing traffic based on security rules.
+
+For example:
+- Allow port 443 for HTTPS
+- Allow port 22 only from trusted IP addresses for SSH
+- Block unnecessary ports
+
+## Why Is Traffic Served Over HTTPS?
+
+Traffic is served over HTTPS to encrypt communication.
+
+HTTPS protects sensitive information such as passwords, cookies, and personal data.
+
+It also helps users verify that they are connected to the correct website.
+
+## What Is Monitoring Used For?
+
+Monitoring is used to observe the health and performance of the infrastructure.
+
+It helps detect:
+- Server downtime
+- High CPU usage
+- High memory usage
+- Disk issues
+- Network problems
+- Application errors
+- High traffic
+
+## How Does the Monitoring Tool Collect Data?
+
+A monitoring client runs on each server.
+
+The client collects metrics and logs, then sends them to a monitoring service such as Sumologic, Datadog, Prometheus, or another monitoring platform.
+
+## How to Monitor Web Server QPS
+
+To monitor QPS, we need to collect the number of HTTP requests handled by the web server per second.
+
+For Nginx, we can:
+- Enable Nginx status module
+- Collect access logs
+- Use a monitoring agent to parse request metrics
+- Send the data to the monitoring platform
+- Create a dashboard and alerts for requests per second
+
+## Issues With This Infrastructure
+
+### SSL Termination at the Load Balancer
+
+Terminating SSL at the load balancer means HTTPS traffic is decrypted at the load balancer.
+
+After that, traffic between the load balancer and backend servers may be unencrypted if HTTP is used internally.
+
+This can be a security issue if the internal network is compromised.
+
+### Only One MySQL Server Accepting Writes
+
+Only the Primary MySQL server can accept writes.
+
+If the Primary database fails, the application cannot write new data.
+
+This creates a Single Point of Failure for write operations.
+
+### Same Components on All Servers
+
+Having the database, web server, and application server on the same machines can be a problem.
+
+Each component has different resource needs.
+
+For example:
+- The database needs disk performance and memory
+- The web server needs network efficiency
+- The application server needs CPU and memory
+
+If all components are mixed on the same servers, scaling becomes harder.
+
+It is also harder to isolate failures.

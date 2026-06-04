@@ -1,3 +1,123 @@
-/Users/farid/Downloads/Distributed web.png
 
+# 1. Distributed Web Infrastructure
+
+## Diagram
+
+/Users/farid/Downloads/Distributed web.png
+https://drive.google.com/drive/u/2/folders/0AIaW6cUuc2CxUk9PVA
 /Users/farid/Downloads/Distributed web.pdf
+
+## Explanation
+
+A user wants to access `www.foobar.com`.
+
+The browser resolves the domain name through DNS. The request is sent to the load balancer.
+
+The load balancer, HAProxy, receives the incoming request and distributes it between Server 1 and Server 2.
+
+Each server contains:
+- Nginx as the web server
+- An application server
+- A copy of the application files
+- A MySQL database
+
+The database is configured as a Primary-Replica cluster.
+
+The Primary database accepts write operations. The Replica database receives replicated data from the Primary and can be used for read operations.
+
+## Why We Added Each Element
+
+### Load Balancer
+
+The load balancer distributes traffic between multiple servers.
+
+It improves performance and helps avoid overloading a single server.
+
+### Second Server
+
+A second server increases capacity and provides redundancy.
+
+If one server fails, the other server can still handle traffic.
+
+### Second Web Server
+
+Each server needs its own Nginx instance to receive and handle HTTP requests.
+
+### Second Application Server
+
+Each server needs an application server to execute the backend logic.
+
+### Second Code Base
+
+Each server needs a copy of the application files to run the website.
+
+### Second Database
+
+The second database is used as a Replica. It helps improve read performance and provides a copy of the data.
+
+## Load Balancer Algorithm
+
+The load balancer is configured with the Round Robin algorithm.
+
+Round Robin sends requests to each server one after another.
+
+Example:
+
+Request 1 -> Server 1
+Request 2 -> Server 2
+Request 3 -> Server 1
+Request 4 -> Server 2
+
+## Active-Active or Active-Passive
+
+This setup is Active-Active because both servers are receiving traffic at the same time.
+
+### Active-Active
+
+In an Active-Active setup, all servers are active and handling traffic.
+
+### Active-Passive
+
+In an Active-Passive setup, one server handles traffic and another server waits as a backup. The passive server is used only if the active server fails.
+
+## Primary-Replica Database Cluster
+
+In a Primary-Replica database cluster, the Primary node receives write operations.
+
+The Replica node copies data from the Primary node through replication.
+
+The application writes data to the Primary database and can read data from the Replica database.
+
+## Difference Between Primary and Replica
+
+### Primary node
+
+The Primary database accepts both read and write operations.
+
+### Replica node
+
+The Replica database is mainly used for read operations. It does not usually accept writes from the application.
+
+## Issues With This Infrastructure
+
+### SPOF
+
+The load balancer is a Single Point of Failure.
+
+If the load balancer goes down, users cannot reach the servers.
+
+The Primary database is also a SPOF for write operations. If it fails, the application cannot write new data.
+
+### Security Issues
+
+There is no firewall, so the infrastructure is more exposed to attacks.
+
+There is no HTTPS, so traffic is not encrypted.
+
+Sensitive data could be intercepted.
+
+### No Monitoring
+
+There is no monitoring system.
+
+If a server fails or becomes overloaded, the team may not notice immediately.

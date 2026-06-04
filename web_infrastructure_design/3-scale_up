@@ -1,0 +1,79 @@
+# 3. Scale Up
+
+## Diagram
+
+(https://drive.google.com/drive/u/2/folders/0AIaW6cUuc2CxUk9PVA)
+![alt text](Scale-up.drawio.png)
+[text](../../../Downloads/Scale-up.drawio.pdf)
+
+## Explanation
+
+A user wants to access `www.foobar.com`.
+
+The DNS resolves the domain name to the infrastructure.
+
+The request reaches a load balancer cluster made of two HAProxy load balancers.
+
+The load balancers are configured as a cluster to avoid having a single load balancer as a Single Point of Failure.
+
+The request is then forwarded to the web server.
+
+The web server, Nginx, handles HTTP or HTTPS requests and serves static content.
+
+For dynamic content, the web server forwards the request to the application server.
+
+The application server runs the backend code and business logic.
+
+If data is needed, the application server communicates with the database server.
+
+The database server runs MySQL and stores the website data.
+
+## Why We Added Each Element
+
+### Additional Server
+
+The additional server allows us to separate the infrastructure components.
+
+Instead of putting the web server, application server, and database on the same machine, each component can have its own server.
+
+This improves scalability, performance, and maintainability.
+
+### Second Load Balancer
+
+The second load balancer is added to create a load balancer cluster.
+
+This removes the load balancer as a Single Point of Failure.
+
+If one load balancer fails, the other one can continue receiving traffic.
+
+### Load Balancer Cluster
+
+The HAProxy load balancers are configured as a cluster.
+
+This improves availability and reliability.
+
+The cluster can work in Active-Passive mode or Active-Active mode.
+
+### Separated Web Server
+
+The web server is separated so it can focus on handling HTTP requests and serving static files.
+
+### Separated Application Server
+
+The application server is separated so it can focus on running the backend logic.
+
+### Separated Database Server
+
+The database server is separated so it can focus on storing and retrieving data efficiently.
+
+## Benefits of This Infrastructure
+
+This infrastructure is easier to scale.
+
+Each layer can be improved independently:
+- More web servers can be added
+- More application servers can be added
+- Database replication can be added
+- Load balancers can be clustered
+
+It also improves reliability because components are separated and easier to monitor, maintain, and debug.
